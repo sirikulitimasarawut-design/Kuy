@@ -1,0 +1,668 @@
+-- บริการที่จำเป็น
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Camera = Workspace.CurrentCamera
+
+-- 1. ScreenGui หลัก
+local CandyHubUI = Instance.new("ScreenGui")
+CandyHubUI.Name = "CandyHubCustom"
+CandyHubUI.ResetOnSpawn = false
+CandyHubUI.Parent = PlayerGui
+
+-- 2. หน้าต่างหลัก (Main Frame)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 450, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -160)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = CandyHubUI
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+local MainGradient = Instance.new("UIGradient")
+MainGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(35, 35, 35)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(10, 10, 10))
+})
+MainGradient.Rotation = 45
+MainGradient.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(255, 255, 255)
+MainStroke.Thickness = 1.5
+MainStroke.Parent = MainFrame
+
+-- 3. แถบด้านบน (Top Bar)
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundTransparency = 1
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -80, 1, 0)
+Title.Position = UDim2.new(0, 16, 0, 0)
+Title.Text = "CANDY HUB"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.BackgroundTransparency = 1
+Title.Parent = TopBar
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -68, 0, 5)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+MinimizeBtn.TextSize = 20
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.BackgroundTransparency = 1
+MinimizeBtn.Parent = TopBar
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 5)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Parent = TopBar
+
+-- แถบเมนู Tab (Combat, Visuals, Official)
+local TabBar = Instance.new("Frame")
+TabBar.Size = UDim2.new(1, -24, 0, 30)
+TabBar.Position = UDim2.new(0, 12, 0, 40)
+TabBar.BackgroundTransparency = 1
+TabBar.Parent = MainFrame
+
+local TabList = Instance.new("UIListLayout")
+TabList.FillDirection = Enum.FillDirection.Horizontal
+TabList.Padding = UDim.new(0, 8)
+TabList.Parent = TabBar
+
+-- 4. โลโก้ตัว C สว่าง ชัดเจน ไม่เบี้ยว
+local LogoBtn = Instance.new("TextButton")
+LogoBtn.Name = "C_LogoButton"
+LogoBtn.Size = UDim2.new(0, 0, 0, 0)
+LogoBtn.Position = UDim2.new(0, 30, 0.5, -25)
+LogoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LogoBtn.Text = "C"
+LogoBtn.TextColor3 = Color3.fromRGB(15, 15, 15)
+LogoBtn.TextSize = 0
+LogoBtn.Font = Enum.Font.FredokaOne
+LogoBtn.Visible = false
+LogoBtn.AutoButtonColor = false
+LogoBtn.Parent = CandyHubUI
+
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(1, 0)
+LogoCorner.Parent = LogoBtn
+
+local LogoGradient = Instance.new("UIGradient")
+LogoGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(200, 200, 200))
+})
+LogoGradient.Rotation = 90
+LogoGradient.Parent = LogoBtn
+
+local LogoStroke = Instance.new("UIStroke")
+LogoStroke.Color = Color3.fromRGB(20, 20, 20)
+LogoStroke.Thickness = 2.5
+LogoStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+LogoStroke.Parent = LogoBtn
+
+local GlowRing = Instance.new("Frame")
+GlowRing.Name = "GlowRing"
+GlowRing.Size = UDim2.new(1, 10, 1, 10)
+GlowRing.Position = UDim2.new(0, -5, 0, -5)
+GlowRing.BackgroundTransparency = 1
+GlowRing.ZIndex = 0
+GlowRing.Parent = LogoBtn
+
+local GlowCorner = Instance.new("UICorner")
+GlowCorner.CornerRadius = UDim.new(1, 0)
+GlowCorner.Parent = GlowRing
+
+local GlowStroke = Instance.new("UIStroke")
+GlowStroke.Color = Color3.fromRGB(255, 255, 255)
+GlowStroke.Thickness = 2
+GlowStroke.Transparency = 0.2
+GlowStroke.Parent = GlowRing
+
+-- 5. พื้นที่ใส่ฟังก์ชัน (Containers)
+local PagesFolder = Instance.new("Folder")
+PagesFolder.Name = "Pages"
+PagesFolder.Parent = MainFrame
+
+local function CreatePage(name)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Name = name
+    Page.Size = UDim2.new(1, -24, 1, -85)
+    Page.Position = UDim2.new(0, 12, 0, 75)
+    Page.BackgroundTransparency = 1
+    Page.BorderSizePixel = 0
+    Page.ScrollBarThickness = 3
+    Page.Visible = false
+    Page.Parent = PagesFolder
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 8)
+    UIListLayout.Parent = Page
+
+    return Page
+end
+
+local Page1 = CreatePage("Combat")
+local Page2 = CreatePage("Visuals")
+local Page3 = CreatePage("Official")
+Page1.Visible = true
+
+local function CreateTabBtn(text, page)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(0, 125, 1, 0)
+    Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Font = Enum.Font.GothamBold
+    Btn.TextSize = 13
+    Btn.Parent = TabBar
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = Btn
+
+    Btn.MouseButton1Click:Connect(function()
+        for _, p in pairs(PagesFolder:GetChildren()) do
+            p.Visible = false
+        end
+        page.Visible = true
+    end)
+end
+
+CreateTabBtn("ฟังก์ชัน 1 (Aimbot)", Page1)
+CreateTabBtn("ฟังก์ชัน 2 (ESP)", Page2)
+CreateTabBtn("Official", Page3)
+
+-- === ระบบการเคลื่อนไหว ย่อหน้าต่าง <-> แสดงตัว C ===
+local isAnimating = false
+local defaultMainSize = UDim2.new(0, 450, 0, 320)
+local lastMainPos = MainFrame.Position
+
+local tweenOut = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+local tweenIn = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    if isAnimating then return end
+    isAnimating = true
+    lastMainPos = MainFrame.Position
+
+    local tweenMain = TweenService:Create(MainFrame, tweenOut, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = LogoBtn.Position
+    })
+    
+    tweenMain:Play()
+    tweenMain.Completed:Connect(function()
+        MainFrame.Visible = false
+        LogoBtn.Visible = true
+        
+        local tweenLogo = TweenService:Create(LogoBtn, tweenIn, {Size = UDim2.new(0, 52, 0, 52)})
+        TweenService:Create(LogoBtn, tweenIn, {TextSize = 32}):Play()
+        tweenLogo:Play()
+        
+        tweenLogo.Completed:Connect(function()
+            isAnimating = false
+        end)
+    end)
+end)
+
+LogoBtn.MouseButton1Click:Connect(function()
+    if isAnimating then return end
+    isAnimating = true
+
+    local tweenLogo = TweenService:Create(LogoBtn, tweenOut, {Size = UDim2.new(0, 0, 0, 0), TextSize = 0})
+    tweenLogo:Play()
+    
+    tweenLogo.Completed:Connect(function()
+        LogoBtn.Visible = false
+        MainFrame.Position = LogoBtn.Position
+        MainFrame.Size = UDim2.new(0, 0, 0, 0)
+        MainFrame.Visible = true
+
+        local tweenMain = TweenService:Create(MainFrame, tweenIn, {
+            Size = defaultMainSize,
+            Position = lastMainPos
+        })
+        tweenMain:Play()
+        tweenMain.Completed:Connect(function()
+            isAnimating = false
+        end)
+    end)
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    CandyHubUI:Destroy()
+end)
+
+-- เอฟเฟกต์ไฟวงแหวน (Glow Pulse)
+task.spawn(function()
+    while true do
+        if LogoBtn.Visible and LogoBtn.Size.X.Offset > 0 then
+            local pOut = TweenService:Create(GlowStroke, TweenInfo.new(1.0, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.7, Thickness = 3.5})
+            local pIn = TweenService:Create(GlowStroke, TweenInfo.new(1.0, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.1, Thickness = 1.5})
+            pOut:Play()
+            pOut.Completed:Wait()
+            pIn:Play()
+            pIn.Completed:Wait()
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- === ฟังก์ชันสร้าง UI Components ===
+local function CreateToggle(parent, name, default, callback)
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, -6, 0, 42)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    ToggleFrame.Parent = parent
+
+    local ToggleCorner = Instance.new("UICorner")
+    ToggleCorner.CornerRadius = UDim.new(0, 10)
+    ToggleCorner.Parent = ToggleFrame
+
+    local ToggleText = Instance.new("TextLabel")
+    ToggleText.Size = UDim2.new(1, -60, 1, 0)
+    ToggleText.Position = UDim2.new(0, 14, 0, 0)
+    ToggleText.Text = name
+    ToggleText.TextColor3 = Color3.fromRGB(240, 240, 240)
+    ToggleText.TextSize = 13
+    ToggleText.Font = Enum.Font.GothamMedium
+    ToggleText.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleText.BackgroundTransparency = 1
+    ToggleText.Parent = ToggleFrame
+
+    local Switch = Instance.new("TextButton")
+    Switch.Size = UDim2.new(0, 44, 0, 22)
+    Switch.Position = UDim2.new(1, -54, 0.5, -11)
+    Switch.BackgroundColor3 = default and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(50, 50, 50)
+    Switch.Text = ""
+    Switch.AutoButtonColor = false
+    Switch.Parent = ToggleFrame
+
+    local SwitchCorner = Instance.new("UICorner")
+    SwitchCorner.CornerRadius = UDim.new(1, 0)
+    SwitchCorner.Parent = Switch
+
+    local Circle = Instance.new("Frame")
+    Circle.Size = UDim2.new(0, 16, 0, 16)
+    Circle.Position = default and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
+    Circle.BackgroundColor3 = default and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(200, 200, 200)
+    Circle.BorderSizePixel = 0
+    Circle.Parent = Switch
+
+    local CircleCorner = Instance.new("UICorner")
+    CircleCorner.CornerRadius = UDim.new(1, 0)
+    CircleCorner.Parent = Circle
+
+    local toggled = default
+
+    Switch.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        local targetPos = toggled and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
+        local targetSwitchColor = toggled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(50, 50, 50)
+        local targetCircleColor = toggled and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(200, 200, 200)
+
+        TweenService:Create(Circle, TweenInfo.new(0.25), {Position = targetPos, BackgroundColor3 = targetCircleColor}):Play()
+        TweenService:Create(Switch, TweenInfo.new(0.25), {BackgroundColor3 = targetSwitchColor}):Play()
+
+        task.spawn(function()
+            callback(toggled)
+        end)
+    end)
+end
+
+local function CreateSlider(parent, name, min, max, default, callback)
+    local SliderFrame = Instance.new("Frame")
+    SliderFrame.Size = UDim2.new(1, -6, 0, 50)
+    SliderFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    SliderFrame.Parent = parent
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 10)
+    Corner.Parent = SliderFrame
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(1, -20, 0, 20)
+    TextLabel.Position = UDim2.new(0, 10, 0, 5)
+    TextLabel.Text = name .. ": " .. tostring(default)
+    TextLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+    TextLabel.TextSize = 13
+    TextLabel.Font = Enum.Font.GothamMedium
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.Parent = SliderFrame
+
+    local SliderBar = Instance.new("Frame")
+    SliderBar.Size = UDim2.new(1, -20, 0, 8)
+    SliderBar.Position = UDim2.new(0, 10, 0, 30)
+    SliderBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    SliderBar.Parent = SliderFrame
+
+    local BarCorner = Instance.new("UICorner")
+    BarCorner.CornerRadius = UDim.new(1, 0)
+    BarCorner.Parent = SliderBar
+
+    local Fill = Instance.new("Frame")
+    Fill.Size = UDim2.new((default - min)/(max - min), 0, 1, 0)
+    Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Fill.Parent = SliderBar
+
+    local FillCorner = Instance.new("UICorner")
+    FillCorner.CornerRadius = UDim.new(1, 0)
+    FillCorner.Parent = Fill
+
+    local dragging = false
+
+    local function Update(input)
+        local pos = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+        local value = math.floor(min + ((max - min) * pos))
+        Fill.Size = UDim2.new(pos, 0, 1, 0)
+        TextLabel.Text = name .. ": " .. tostring(value)
+        callback(value)
+    end
+
+    SliderBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            Update(input)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            Update(input)
+        end
+    end)
+end
+
+-- ==========================================
+-- ระบบหลัก (LOGIC)
+-- ==========================================
+
+-- 1. FOV Circle & Aimbot Variables
+local FOVring = Drawing.new("Circle")
+FOVring.Visible = false
+FOVring.Thickness = 1.5
+FOVring.Radius = 150
+FOVring.Transparency = 1
+FOVring.Color = Color3.fromRGB(255, 255, 255)
+FOVring.Filled = false
+
+local LockHead = false
+local SilentAim = false
+
+RunService.RenderStepped:Connect(function()
+    FOVring.Position = UserInputService:GetMouseLocation()
+end)
+
+local function GetClosestPlayer()
+    local Target = nil
+    local MaxDist = FOVring.Radius
+
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChildOfClass("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local pos, onScreen = Camera:WorldToViewportPoint(v.Character.Head.Position)
+            if onScreen then
+                local mousePos = UserInputService:GetMouseLocation()
+                local dist = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                if dist < MaxDist then
+                    Target = v.Character.Head
+                    MaxDist = dist
+                end
+            end
+        end
+    end
+    return Target
+end
+
+RunService.RenderStepped:Connect(function()
+    if LockHead then
+        local target = GetClosestPlayer()
+        if target then
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Position)
+        end
+    end
+end)
+
+-- 2. ESP Variables
+local ESP_Players = false
+local ESP_Tools = false
+local ESP_HeldWeapon = false
+
+local function ApplyESP(plr)
+    if plr == LocalPlayer then return end
+    
+    local function SetupCharacter(char)
+        if not char then return end
+        
+        -- Highlight (มองทะลุตัว)
+        local hl = Instance.new("Highlight")
+        hl.Name = "CandyESP"
+        hl.FillColor = Color3.fromRGB(255, 0, 0)
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+        hl.FillTransparency = 0.5
+        hl.Enabled = ESP_Players
+        hl.Parent = char
+
+        -- BillboardGui สำหรับแสดงอาวุธที่ถือ
+        local bg = Instance.new("BillboardGui")
+        bg.Name = "WeaponESP"
+        bg.Size = UDim2.new(0, 100, 0, 40)
+        bg.AlwaysOnTop = true
+        bg.Adornee = char:WaitForChild("Head", 5)
+        bg.Enabled = ESP_HeldWeapon
+        bg.Parent = char
+
+        local img = Instance.new("ImageLabel")
+        img.Name = "WeaponIcon"
+        img.Size = UDim2.new(0, 25, 0, 25)
+        img.Position = UDim2.new(0.5, -12, 0, 0)
+        img.BackgroundTransparency = 1
+        img.Image = "rbxassetid://3926307971" -- ไอคอนไอเทมสัญลักษณ์ปืน/เครื่องมือ
+        img.Parent = bg
+
+        local txt = Instance.new("TextLabel")
+        txt.Size = UDim2.new(1, 0, 0, 15)
+        txt.Position = UDim2.new(0, 0, 1, -15)
+        txt.Text = "None"
+        txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+        txt.TextSize = 10
+        txt.Font = Enum.Font.GothamBold
+        txt.BackgroundTransparency = 1
+        txt.Parent = bg
+
+        char.ChildAdded:Connect(function(child)
+            if child:IsA("Tool") then
+                txt.Text = child.Name
+            end
+        end)
+        char.ChildRemoved:Connect(function(child)
+            if child:IsA("Tool") then
+                txt.Text = "None"
+            end
+        end)
+    end
+
+    if plr.Character then SetupCharacter(plr.Character) end
+    plr.CharacterAdded:Connect(SetupCharacter)
+end
+
+for _, p in pairs(Players:GetPlayers()) do ApplyESP(p) end
+Players.PlayerAdded:Connect(ApplyESP)
+
+-- มองปืน/อาวุธที่ตกบนพื้น
+Workspace.ChildAdded:Connect(function(child)
+    if ESP_Tools and child:IsA("Tool") and child:FindFirstChild("Handle") then
+        local bg = Instance.new("BillboardGui")
+        bg.Name = "DroppedToolESP"
+        bg.Size = UDim2.new(0, 100, 0, 30)
+        bg.AlwaysOnTop = true
+        bg.Adornee = child.Handle
+        bg.Parent = child
+
+        local txt = Instance.new("TextLabel")
+        txt.Size = UDim2.new(1, 0, 1, 0)
+        txt.Text = "[ " .. child.Name .. " ]"
+        txt.TextColor3 = Color3.fromRGB(0, 255, 150)
+        txt.TextSize = 12
+        txt.Font = Enum.Font.GothamBold
+        txt.BackgroundTransparency = 1
+        txt.Parent = bg
+    end
+end)
+
+-- ==========================================
+-- ใส่ส่วนประกอบ UI แต่ละหน้า
+-- ==========================================
+
+-- หน้า 1: Combat
+CreateToggle(Page1, "ล็อคหัว (Aimbot)", false, function(state)
+    LockHead = state
+end)
+
+CreateToggle(Page1, "Silent Aim", false, function(state)
+    SilentAim = state
+end)
+
+CreateToggle(Page1, "แสดง วงกลม FOV", false, function(state)
+    FOVring.Visible = state
+end)
+
+CreateSlider(Page1, "ปรับขนาด Circle (FOV)", 1, 800, 150, function(value)
+    FOVring.Radius = value
+end)
+
+-- หน้า 2: Visuals
+CreateToggle(Page2, "มองทะลุผู้คน (Player ESP)", false, function(state)
+    ESP_Players = state
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Character and p.Character:FindFirstChild("CandyESP") then
+            p.Character.CandyESP.Enabled = state
+        end
+    end
+end)
+
+CreateToggle(Page2, "มองปืนตกพื้น (Dropped Tools)", false, function(state)
+    ESP_Tools = state
+end)
+
+CreateToggle(Page2, "มองเห็นอาวุธในตัวผู้เล่น", false, function(state)
+    ESP_HeldWeapon = state
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Character and p.Character:FindFirstChild("WeaponESP") then
+            p.Character.WeaponESP.Enabled = state
+        end
+    end
+end)
+
+-- หน้า 3: Official
+local function CreateOfficialLabel(text)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -6, 0, 35)
+    lbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    lbl.Text = text
+    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.Font = Enum.Font.GothamMedium
+    lbl.TextSize = 13
+    lbl.Parent = Page3
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = lbl
+    return lbl
+end
+
+CreateOfficialLabel("By: RIP_frog2253")
+CreateOfficialLabel("TikTok: asarawutsirikul")
+
+-- ปุ่มคัดลอก Discord ลิงก์
+local CopyDiscordBtn = Instance.new("TextButton")
+CopyDiscordBtn.Size = UDim2.new(1, -6, 0, 42)
+CopyDiscordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242) -- สีฟ้า Discord
+CopyDiscordBtn.Text = "คัดลอกลิงก์ Discord (คลิกเพื่อ Copy)"
+CopyDiscordBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyDiscordBtn.Font = Enum.Font.GothamBold
+CopyDiscordBtn.TextSize = 13
+CopyDiscordBtn.Parent = Page3
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 10)
+BtnCorner.Parent = CopyDiscordBtn
+
+CopyDiscordBtn.MouseButton1Click:Connect(function()
+    local discordUrl = "https://discord.gg/CKnrq3Jt3K"
+    if setclipboard then
+        setclipboard(discordUrl)
+        CopyDiscordBtn.Text = "คัดลอกสำเร็จแล้ว!"
+        task.wait(2)
+        CopyDiscordBtn.Text = "คัดลอกลิงก์ Discord (คลิกเพื่อ Copy)"
+    else
+        CopyDiscordBtn.Text = "Executor ไม่รองรับ setclipboard"
+    end
+end)
+
+-- === ระบบลากย้าย (Drag) ===
+local function EnableDrag(frame, dragHandle)
+    local dragging, dragInput, dragStart, startPos
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    dragHandle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+EnableDrag(MainFrame, TopBar)
+EnableDrag(LogoBtn, LogoBtn)
