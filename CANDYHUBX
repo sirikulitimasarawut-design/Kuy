@@ -1,0 +1,335 @@
+-- บริการที่จำเป็น
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- 1. ScreenGui หลัก
+local CandyHubUI = Instance.new("ScreenGui")
+CandyHubUI.Name = "CandyHubCustom"
+CandyHubUI.ResetOnSpawn = false
+CandyHubUI.Parent = PlayerGui
+
+-- 2. หน้าต่างหลัก (Main Frame)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 420, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -210, 0.5, -130)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = CandyHubUI
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+local MainGradient = Instance.new("UIGradient")
+MainGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(35, 35, 35)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(10, 10, 10))
+})
+MainGradient.Rotation = 45
+MainGradient.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(255, 255, 255)
+MainStroke.Thickness = 1.5
+MainStroke.Parent = MainFrame
+
+-- 3. แถบด้านบน (Top Bar)
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundTransparency = 1
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -80, 1, 0)
+Title.Position = UDim2.new(0, 16, 0, 0)
+Title.Text = "CANDY HUB"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.BackgroundTransparency = 1
+Title.Parent = TopBar
+
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -68, 0, 5)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+MinimizeBtn.TextSize = 20
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.BackgroundTransparency = 1
+MinimizeBtn.Parent = TopBar
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 5)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Parent = TopBar
+
+-- 4. โลโก้ตัว C สว่าง ชัดเจน ไม่เบี้ยว
+local LogoBtn = Instance.new("TextButton")
+LogoBtn.Name = "C_LogoButton"
+LogoBtn.Size = UDim2.new(0, 0, 0, 0)
+LogoBtn.Position = UDim2.new(0, 30, 0.5, -25)
+LogoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LogoBtn.Text = "C"
+LogoBtn.TextColor3 = Color3.fromRGB(15, 15, 15)
+LogoBtn.TextSize = 0
+LogoBtn.Font = Enum.Font.FredokaOne
+LogoBtn.Visible = false
+LogoBtn.AutoButtonColor = false
+LogoBtn.Parent = CandyHubUI
+
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(1, 0)
+LogoCorner.Parent = LogoBtn
+
+local LogoGradient = Instance.new("UIGradient")
+LogoGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(200, 200, 200))
+})
+LogoGradient.Rotation = 90
+LogoGradient.Parent = LogoBtn
+
+local LogoStroke = Instance.new("UIStroke")
+LogoStroke.Color = Color3.fromRGB(20, 20, 20)
+LogoStroke.Thickness = 2.5
+LogoStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+LogoStroke.Parent = LogoBtn
+
+local GlowRing = Instance.new("Frame")
+GlowRing.Name = "GlowRing"
+GlowRing.Size = UDim2.new(1, 10, 1, 10)
+GlowRing.Position = UDim2.new(0, -5, 0, -5)
+GlowRing.BackgroundTransparency = 1
+GlowRing.ZIndex = 0
+GlowRing.Parent = LogoBtn
+
+local GlowCorner = Instance.new("UICorner")
+GlowCorner.CornerRadius = UDim.new(1, 0)
+GlowCorner.Parent = GlowRing
+
+local GlowStroke = Instance.new("UIStroke")
+GlowStroke.Color = Color3.fromRGB(255, 255, 255)
+GlowStroke.Thickness = 2
+GlowStroke.Transparency = 0.2
+GlowStroke.Parent = GlowRing
+
+-- 5. พื้นที่ใส่ฟังก์ชัน (Container)
+local Container = Instance.new("Frame")
+Container.Size = UDim2.new(1, -24, 1, -52)
+Container.Position = UDim2.new(0, 12, 0, 42)
+Container.BackgroundTransparency = 1
+Container.Parent = MainFrame
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.Parent = Container
+
+-- === ระบบการเคลื่อนไหว ย่อหน้าต่าง <-> แสดงตัว C ===
+local isAnimating = false
+local defaultMainSize = UDim2.new(0, 420, 0, 260)
+local lastMainPos = MainFrame.Position
+
+local tweenOut = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+local tweenIn = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    if isAnimating then return end
+    isAnimating = true
+    lastMainPos = MainFrame.Position
+
+    local tweenMain = TweenService:Create(MainFrame, tweenOut, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = LogoBtn.Position
+    })
+    
+    tweenMain:Play()
+    tweenMain.Completed:Connect(function()
+        MainFrame.Visible = false
+        LogoBtn.Visible = true
+        
+        local tweenLogo = TweenService:Create(LogoBtn, tweenIn, {Size = UDim2.new(0, 52, 0, 52)})
+        TweenService:Create(LogoBtn, tweenIn, {TextSize = 32}):Play()
+        tweenLogo:Play()
+        
+        tweenLogo.Completed:Connect(function()
+            isAnimating = false
+        end)
+    end)
+end)
+
+LogoBtn.MouseButton1Click:Connect(function()
+    if isAnimating then return end
+    isAnimating = true
+
+    local tweenLogo = TweenService:Create(LogoBtn, tweenOut, {Size = UDim2.new(0, 0, 0, 0), TextSize = 0})
+    tweenLogo:Play()
+    
+    tweenLogo.Completed:Connect(function()
+        LogoBtn.Visible = false
+        MainFrame.Position = LogoBtn.Position
+        MainFrame.Size = UDim2.new(0, 0, 0, 0)
+        MainFrame.Visible = true
+
+        local tweenMain = TweenService:Create(MainFrame, tweenIn, {
+            Size = defaultMainSize,
+            Position = lastMainPos
+        })
+        tweenMain:Play()
+        tweenMain.Completed:Connect(function()
+            isAnimating = false
+        end)
+    end)
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    CandyHubUI:Destroy()
+end)
+
+-- เอฟเฟกต์ไฟวงแหวน (Glow Pulse)
+task.spawn(function()
+    while true do
+        if LogoBtn.Visible and LogoBtn.Size.X.Offset > 0 then
+            local pOut = TweenService:Create(GlowStroke, TweenInfo.new(1.0, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.7, Thickness = 3.5})
+            local pIn = TweenService:Create(GlowStroke, TweenInfo.new(1.0, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.1, Thickness = 1.5})
+            pOut:Play()
+            pOut.Completed:Wait()
+            pIn:Play()
+            pIn.Completed:Wait()
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- === ฟังก์ชันสร้าง Toggle Button ===
+local function CreateToggle(name, default, callback)
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, 0, 0, 42)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleFrame.BorderSizePixel = 0
+    ToggleFrame.Parent = Container
+
+    local ToggleCorner = Instance.new("UICorner")
+    ToggleCorner.CornerRadius = UDim.new(0, 10)
+    ToggleCorner.Parent = ToggleFrame
+
+    local ToggleGradient = Instance.new("UIGradient")
+    ToggleGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(40, 40, 40)),
+        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(20, 20, 20))
+    })
+    ToggleGradient.Rotation = 90
+    ToggleGradient.Parent = ToggleFrame
+
+    local ToggleStroke = Instance.new("UIStroke")
+    ToggleStroke.Color = Color3.fromRGB(80, 80, 80)
+    ToggleStroke.Thickness = 1
+    ToggleStroke.Parent = ToggleFrame
+
+    local ToggleText = Instance.new("TextLabel")
+    ToggleText.Size = UDim2.new(1, -60, 1, 0)
+    ToggleText.Position = UDim2.new(0, 14, 0, 0)
+    ToggleText.Text = name
+    ToggleText.TextColor3 = Color3.fromRGB(240, 240, 240)
+    ToggleText.TextSize = 14
+    ToggleText.Font = Enum.Font.GothamMedium
+    ToggleText.TextXAlignment = Enum.TextXAlignment.Left
+    ToggleText.BackgroundTransparency = 1
+    ToggleText.Parent = ToggleFrame
+
+    local Switch = Instance.new("TextButton")
+    Switch.Size = UDim2.new(0, 44, 0, 22)
+    Switch.Position = UDim2.new(1, -54, 0.5, -11)
+    Switch.BackgroundColor3 = default and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(45, 45, 45)
+    Switch.Text = ""
+    Switch.AutoButtonColor = false
+    Switch.Parent = ToggleFrame
+
+    local SwitchCorner = Instance.new("UICorner")
+    SwitchCorner.CornerRadius = UDim.new(1, 0)
+    SwitchCorner.Parent = Switch
+
+    local Circle = Instance.new("Frame")
+    Circle.Size = UDim2.new(0, 16, 0, 16)
+    Circle.Position = default and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
+    Circle.BackgroundColor3 = default and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(200, 200, 200)
+    Circle.BorderSizePixel = 0
+    Circle.Parent = Switch
+
+    local CircleCorner = Instance.new("UICorner")
+    CircleCorner.CornerRadius = UDim.new(1, 0)
+    CircleCorner.Parent = Circle
+
+    local toggled = default
+
+    Switch.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        local targetPos = toggled and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
+        local targetSwitchColor = toggled and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(45, 45, 45)
+        local targetCircleColor = toggled and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(200, 200, 200)
+
+        local switchTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        TweenService:Create(Circle, switchTweenInfo, {Position = targetPos, BackgroundColor3 = targetCircleColor}):Play()
+        TweenService:Create(Switch, switchTweenInfo, {BackgroundColor3 = targetSwitchColor}):Play()
+
+        task.spawn(function()
+            callback(toggled)
+        end)
+    end)
+end
+
+-- ปุ่มตัวอย่าง
+CreateToggle("WalkSpeed (ความเร็ว 50)", false, function(state)
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = state and 50 or 16
+    end
+end)
+
+-- === ระบบลากย้าย (Drag) ===
+local function EnableDrag(frame, dragHandle)
+    local dragging, dragInput, dragStart, startPos
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    dragHandle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+EnableDrag(MainFrame, TopBar)
+EnableDrag(LogoBtn, LogoBtn)
